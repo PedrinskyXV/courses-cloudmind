@@ -119,6 +119,12 @@ section p {
     font-weight: 700;
     text-transform: uppercase;
 }
+
+.logo a{
+    font-size: x-large;
+    text-transform: uppercase;
+}
+
 .left-nav ul {
     margin: 0;
     padding: 0;
