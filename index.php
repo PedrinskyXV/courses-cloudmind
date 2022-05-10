@@ -232,6 +232,25 @@
         </div>
     </div>
     <!-- Courses area End -->
+
+    <!--? Last Videos Area Start -->
+    <div class="topic-area section-padding40">
+        <div class="container">
+            <div class="row justify-content-center">
+                <div class="col-xl-7 col-lg-8">
+                    <div class="section-tittle text-center mb-55">
+                        <h2>Últimos Videos</h2>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row" id="ultimos-videos">
+                
+            </div>            
+        </div>
+    </div>
+    <!-- Last Videos End -->
+
     <!--? About Area-1 Start -->
     <section class="about-area1 fix pt-10">
         <div class="support-wrapper align-items-center">
@@ -483,5 +502,43 @@
     </section>
     <!-- About Area End -->
 </main>
+
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"
+    integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4=" crossorigin="anonymous"></script>
+
+<script>
+var resPorPagina = 6;
+var key = "AIzaSyD_OrSd1xPBRcwZaUqQ973hBAdvQJrN3vE";
+var idCanal = "UCRqNh4nXqiMywN1-otMZ1gQ";
+var url = "https://www.googleapis.com/youtube/v3/search?key=" + key + "&channelId=" + idCanal +
+    "&part=snippet,id&order=date&maxResults=" + resPorPagina;
+$("#contenedor").append(url);
+$.getJSON(url, function(data) {
+
+    for (var k in data.items) {
+        var tituloVideo = data.items[k]["snippet"].title;
+        var urlVideo = "https://www.youtube.com/watch?v=" + data.items[k]["id"].videoId;
+        var fechaVideo = data.items[k]["snippet"].publishedAt;
+        var descripcion = data.items[k]["snippet"].description;
+        var idVideo = data.items[k]["id"].videoId;
+        
+        var div2 = `<div class="col-lg-4 col-md-4 col-sm-6">
+                    <div class="card">
+                    <iframe width="360" height="300" src="https://www.youtube.com/embed/${idVideo}"
+                                title="YouTube video player" frameborder="0"
+                                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                                allowfullscreen></iframe>
+                      <div class="card-body">
+                        <h3 class="card-title"><a href="${urlVideo}">${tituloVideo}</a></h3>                        
+                        <p class="card-text">${descripcion}</p>
+                      </div>
+                    </div>
+                </div>`
+        
+        $("#ultimos-videos").append(div2);
+    }
+
+});
+</script>
 
 <?php include('template/footer.php'); ?>
