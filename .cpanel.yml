@@ -1,0 +1,19 @@
+---
+deployment:
+  tasks:
+    - export DEPLOYPATH=/home/user/public_html/
+    - /bin/cp index.php $DEPLOYPATH
+    - /bin/cp style.css $DEPLOYPATH
+    - /bin/cp about.php $DEPLOYPATH
+    - /bin/cp blog_details.html $DEPLOYPATH
+    - /bin/cp blog.html $DEPLOYPATH
+    - /bin/cp contact_process.php $DEPLOYPATH
+    - /bin/cp contact.php $DEPLOYPATH
+    - /bin/cp courses.php $DEPLOYPATH
+    - /bin/cp elements.html $DEPLOYPATH
+    - /bin/cp login.html $DEPLOYPATH
+    - /bin/cp main.html $DEPLOYPATH
+    - /bin/cp register.html $DEPLOYPATH
+    - /bin/cp -R template $DEPLOYPATH
+    - /bin/cp -R Doc $DEPLOYPATH
+    - /bin/cp -R assets $DEPLOYPATH
