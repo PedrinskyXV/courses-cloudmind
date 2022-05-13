@@ -31,6 +31,74 @@
             </div>
         </div>
     </section>
+    <!-- ? linkedind-api-area -->
+    <div class="container">
+        <?php
+        require_once 'config.php';
+        require_once 'vendor/autoload.php';
+
+        use GuzzleHttp\Client;
+
+        if (isset($_REQUEST["action"]) && $_REQUEST["action"] == "linkdone") {
+        ?>
+            <div class="alert alert-success" role="alert">
+                Ya publicaste en LInkedIn!, revisa tu perfil.
+            </div>
+            <?php
+        }
+
+        if (isset($_REQUEST["action"]) && $_REQUEST["action"] == "linkauth") {
+            try {
+                //access token
+                $client = new Client(['base_uri' => 'https://www.linkedin.com']);
+                $response = $client->request('POST', '/oauth/v2/accessToken', [
+                    'form_params' => [
+                        "grant_type" => "authorization_code",
+                        "code" => $_GET['code'],
+                        "redirect_uri" => REDIRECT_URL,
+                        "client_id" => CLIENT_ID,
+                        "client_secret" => CLIENT_SECRET,
+                    ],
+                ]);
+                $data = json_decode($response->getBody()->getContents(), true);
+                $access_token = $data['access_token'];
+                //user id
+                try {
+                    $client = new Client(['base_uri' => 'https://api.linkedin.com']);
+                    $response = $client->request('GET', '/v2/me', [
+                        'headers' => [
+                            "Authorization" => "Bearer " . $access_token,
+                        ],
+                    ]);
+                    $data = json_decode($response->getBody()->getContents(), true);
+                    $linkedin_profile_id = $data['id']; // store this id somewhere
+            ?>
+                    <form action="linkedin-api_share.php" method="POST">
+                        <div class="form-group">
+                            <textarea class="form-control" id="text" name="text" rows="3" value="Visite la pagina de CloudMind y me gusto!"></textarea>
+                            <input type="hidden" name="id" value="<?php echo $linkedin_profile_id; ?>">
+                            <input type="hidden" name="token" value="<?php echo $access_token; ?>">
+                            <button type="submit" class="btn btn-primary">Publicar en LinkedIn</button>
+                        </div>
+                    </form>
+            <?php
+
+                } catch (Exception $e) {
+                    //echo $e->getMessage();
+                }
+            } catch (Exception $e) {
+                //echo $e->getMessage();
+            }
+        } else {
+            require_once 'linkedin-api-config.php';
+            $url = "https://www.linkedin.com/oauth/v2/authorization?response_type=code&client_id=" . CLIENT_ID . "&redirect_uri=" . REDIRECT_URL . "&scope=" . SCOPES;
+            ?>
+            <h3>Para poder compartir en LinkedIn <a href="<?php echo $url; ?>">Ingresa a LinkedIn</a></h3>
+        <?php
+        }
+        ?>
+
+    </div>
     <!-- ? services-area -->
     <div class="services-area">
         <div class="container">
@@ -245,8 +313,8 @@
             </div>
 
             <div class="row" id="ultimos-videos">
-                
-            </div>            
+
+            </div>
         </div>
     </div>
     <!-- Last Videos End -->
@@ -298,10 +366,7 @@
                     <img src="assets/img/gallery/about.png" alt="">
 
                     <div class="video-icon">
-                        <iframe width="560" height="315" src="https://www.youtube.com/embed/9I25jRwCmTg"
-                            title="YouTube video player" frameborder="0"
-                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                            allowfullscreen></iframe>
+                        <iframe width="560" height="315" src="https://www.youtube.com/embed/9I25jRwCmTg" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
                     </div>
                 </div>
             </div>
@@ -504,7 +569,7 @@
 </main>
 <!-- GetButton.io widget -->
 <script type="text/javascript">
-    (function () {
+    (function() {
         var options = {
             facebook: "104391435555996", // Facebook page ID
             instagram: "cloudd_mindd", // Instagram username
@@ -513,33 +578,40 @@
             position: "left", // Position may be 'right' or 'left'
             order: "facebook,instagram", // Order of buttons
         };
-        var proto = document.location.protocol, host = "getbutton.io", url = proto + "//static." + host;
-        var s = document.createElement('script'); s.type = 'text/javascript'; s.async = true; s.src = url + '/widget-send-button/js/init.js';
-        s.onload = function () { WhWidgetSendButton.init(host, proto, options); };
-        var x = document.getElementsByTagName('script')[0]; x.parentNode.insertBefore(s, x);
+        var proto = document.location.protocol,
+            host = "getbutton.io",
+            url = proto + "//static." + host;
+        var s = document.createElement('script');
+        s.type = 'text/javascript';
+        s.async = true;
+        s.src = url + '/widget-send-button/js/init.js';
+        s.onload = function() {
+            WhWidgetSendButton.init(host, proto, options);
+        };
+        var x = document.getElementsByTagName('script')[0];
+        x.parentNode.insertBefore(s, x);
     })();
 </script>
 <!-- /GetButton.io widget -->
-<script src="https://code.jquery.com/jquery-3.6.0.min.js"
-    integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4=" crossorigin="anonymous"></script>
+<script src="https://code.jquery.com/jquery-3.6.0.min.js" integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4=" crossorigin="anonymous"></script>
 
 <script>
-var resPorPagina = 6;
-var key = "AIzaSyD_OrSd1xPBRcwZaUqQ973hBAdvQJrN3vE";
-var idCanal = "UCRqNh4nXqiMywN1-otMZ1gQ";
-var url = "https://www.googleapis.com/youtube/v3/search?key=" + key + "&channelId=" + idCanal +
-    "&part=snippet,id&order=date&maxResults=" + resPorPagina;
-$("#contenedor").append(url);
-$.getJSON(url, function(data) {
+    var resPorPagina = 6;
+    var key = "AIzaSyD_OrSd1xPBRcwZaUqQ973hBAdvQJrN3vE";
+    var idCanal = "UCRqNh4nXqiMywN1-otMZ1gQ";
+    var url = "https://www.googleapis.com/youtube/v3/search?key=" + key + "&channelId=" + idCanal +
+        "&part=snippet,id&order=date&maxResults=" + resPorPagina;
+    $("#contenedor").append(url);
+    $.getJSON(url, function(data) {
 
-    for (var k in data.items) {
-        var tituloVideo = data.items[k]["snippet"].title;
-        var urlVideo = "https://www.youtube.com/watch?v=" + data.items[k]["id"].videoId;
-        var fechaVideo = data.items[k]["snippet"].publishedAt;
-        var descripcion = data.items[k]["snippet"].description;
-        var idVideo = data.items[k]["id"].videoId;
-        
-        var div2 = `<div class="col-lg-4 col-md-4 col-sm-6">
+        for (var k in data.items) {
+            var tituloVideo = data.items[k]["snippet"].title;
+            var urlVideo = "https://www.youtube.com/watch?v=" + data.items[k]["id"].videoId;
+            var fechaVideo = data.items[k]["snippet"].publishedAt;
+            var descripcion = data.items[k]["snippet"].description;
+            var idVideo = data.items[k]["id"].videoId;
+
+            var div2 = `<div class="col-lg-4 col-md-4 col-sm-6">
                     <div class="card">
                     <iframe width="360" height="300" src="https://www.youtube.com/embed/${idVideo}"
                                 title="YouTube video player" frameborder="0"
@@ -551,11 +623,11 @@ $.getJSON(url, function(data) {
                       </div>
                     </div>
                 </div>`
-        
-        $("#ultimos-videos").append(div2);
-    }
 
-});
+            $("#ultimos-videos").append(div2);
+        }
+
+    });
 </script>
 
 <?php include('template/footer.php'); ?>
