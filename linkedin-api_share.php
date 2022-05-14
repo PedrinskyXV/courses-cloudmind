@@ -1,5 +1,5 @@
 <?php
-require_once 'config.php';
+require_once 'linkedin-api-config.php';
 require_once 'vendor/autoload.php';
 
 use GuzzleHttp\Client;

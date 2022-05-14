@@ -31,74 +31,7 @@
             </div>
         </div>
     </section>
-    <!-- ? linkedind-api-area -->
-    <div class="container">
-        <?php
-        require_once 'config.php';
-        require_once 'vendor/autoload.php';
 
-        use GuzzleHttp\Client;
-
-        if (isset($_REQUEST["action"]) && $_REQUEST["action"] == "linkdone") {
-        ?>
-            <div class="alert alert-success" role="alert">
-                Ya publicaste en LInkedIn!, revisa tu perfil.
-            </div>
-            <?php
-        }
-
-        if (isset($_REQUEST["action"]) && $_REQUEST["action"] == "linkauth") {
-            try {
-                //access token
-                $client = new Client(['base_uri' => 'https://www.linkedin.com']);
-                $response = $client->request('POST', '/oauth/v2/accessToken', [
-                    'form_params' => [
-                        "grant_type" => "authorization_code",
-                        "code" => $_GET['code'],
-                        "redirect_uri" => REDIRECT_URL,
-                        "client_id" => CLIENT_ID,
-                        "client_secret" => CLIENT_SECRET,
-                    ],
-                ]);
-                $data = json_decode($response->getBody()->getContents(), true);
-                $access_token = $data['access_token'];
-                //user id
-                try {
-                    $client = new Client(['base_uri' => 'https://api.linkedin.com']);
-                    $response = $client->request('GET', '/v2/me', [
-                        'headers' => [
-                            "Authorization" => "Bearer " . $access_token,
-                        ],
-                    ]);
-                    $data = json_decode($response->getBody()->getContents(), true);
-                    $linkedin_profile_id = $data['id']; // store this id somewhere
-            ?>
-                    <form action="linkedin-api_share.php" method="POST">
-                        <div class="form-group">
-                            <textarea class="form-control" id="text" name="text" rows="3" value="Visite la pagina de CloudMind y me gusto!"></textarea>
-                            <input type="hidden" name="id" value="<?php echo $linkedin_profile_id; ?>">
-                            <input type="hidden" name="token" value="<?php echo $access_token; ?>">
-                            <button type="submit" class="btn btn-primary">Publicar en LinkedIn</button>
-                        </div>
-                    </form>
-            <?php
-
-                } catch (Exception $e) {
-                    //echo $e->getMessage();
-                }
-            } catch (Exception $e) {
-                //echo $e->getMessage();
-            }
-        } else {
-            require_once 'linkedin-api-config.php';
-            $url = "https://www.linkedin.com/oauth/v2/authorization?response_type=code&client_id=" . CLIENT_ID . "&redirect_uri=" . REDIRECT_URL . "&scope=" . SCOPES;
-            ?>
-            <h3>Para poder compartir en LinkedIn <a href="<?php echo $url; ?>">Ingresa a LinkedIn</a></h3>
-        <?php
-        }
-        ?>
-
-    </div>
     <!-- ? services-area -->
     <div class="services-area">
         <div class="container">
@@ -139,6 +72,76 @@
             </div>
         </div>
     </div>
+
+    <!-- ? linkedind-api-area -->
+    <div class="container">
+        <?php
+        require_once 'linkedin-api-config.php';
+        require_once 'vendor/autoload.php';
+
+        use GuzzleHttp\Client;
+
+        if (isset($_REQUEST["action"]) && $_REQUEST["action"] == "linkdone") {
+        ?>
+            <div class="alert alert-success my-4" role="alert">
+                Ya publicaste en LInkedIn!, revisa tu perfil.
+            </div>
+            <?php
+        }
+
+        if (isset($_REQUEST["action"]) && $_REQUEST["action"] == "linkauth") {
+            try {
+                //access token
+                $client = new Client(['base_uri' => 'https://www.linkedin.com']);
+                $response = $client->request('POST', '/oauth/v2/accessToken', [
+                    'form_params' => [
+                        "grant_type" => "authorization_code",
+                        "code" => $_GET['code'],
+                        "redirect_uri" => REDIRECT_URL,
+                        "client_id" => CLIENT_ID,
+                        "client_secret" => CLIENT_SECRET,
+                    ],
+                ]);
+                $data = json_decode($response->getBody()->getContents(), true);
+                $access_token = $data['access_token'];
+                //user id
+                try {
+                    $client = new Client(['base_uri' => 'https://api.linkedin.com']);
+                    $response = $client->request('GET', '/v2/me', [
+                        'headers' => [
+                            "Authorization" => "Bearer " . $access_token,
+                        ],
+                    ]);
+                    $data = json_decode($response->getBody()->getContents(), true);
+                    $linkedin_profile_id = $data['id']; // store this id somewhere
+            ?>
+                    <form action="linkedin-api_share.php" method="POST">
+                        <div class="form-group">
+                            <textarea class="form-control" id="text" name="text" rows="3">Visite la pagina de CloudMind y me gusto!</textarea>
+                            <input type="hidden" name="id" value="<?php echo $linkedin_profile_id; ?>">
+                            <input type="hidden" name="token" value="<?php echo $access_token; ?>">
+                            <button type="submit" class="btn btn-primary my-4">Publicar en LinkedIn</button>
+                        </div>
+                    </form>
+            <?php
+
+                } catch (Exception $e) {
+                    //echo $e->getMessage();
+                }
+            } catch (Exception $e) {
+                //echo $e->getMessage();
+            }
+        } else {
+            require_once 'linkedin-api-config.php';
+            $url = "https://www.linkedin.com/oauth/v2/authorization?response_type=code&client_id=" . CLIENT_ID . "&redirect_uri=" . REDIRECT_URL . "&scope=" . SCOPES;
+            ?>
+            <h3>Para poder compartir en LinkedIn <a href="<?php echo $url; ?>"><u>Ingresa a LinkedIn</u></a></h3>
+        <?php
+        }
+        ?>
+
+    </div>
+
     <!-- Courses area start -->
     <div class="courses-area section-padding40 fix">
         <div class="container">
